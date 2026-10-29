@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ArithExpTest {
-    private IDictionary<String, IValue> symTable;
+    private final IDictionary<String, IValue> symTable = new MyDictionary<>();
 
     private static IExp num(int n) {
         return new ValueExp(new IntValue(n));
@@ -21,11 +21,6 @@ class ArithExpTest {
 
     private static IExp bool(boolean b) {
         return new ValueExp(new BoolValue(b));
-    }
-
-    @BeforeEach
-    void setUp() {
-        symTable = new MyDictionary<>();
     }
 
     @Test
