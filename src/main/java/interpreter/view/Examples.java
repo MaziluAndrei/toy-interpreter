@@ -1,19 +1,9 @@
 package interpreter.view;
 
-import interpreter.model.exp.ArithExp;
-import interpreter.model.exp.ArithOp;
-import interpreter.model.exp.ValueExp;
-import interpreter.model.exp.VarExp;
-import interpreter.model.stmt.AssignStmt;
-import interpreter.model.stmt.CompStmt;
-import interpreter.model.stmt.IStmt;
-import interpreter.model.stmt.IfStmt;
-import interpreter.model.stmt.PrintStmt;
-import interpreter.model.stmt.VarDeclStmt;
-import interpreter.model.type.BoolType;
-import interpreter.model.type.IntType;
-import interpreter.model.value.BoolValue;
-import interpreter.model.value.IntValue;
+import interpreter.model.exp.*;
+import interpreter.model.stmt.*;
+import interpreter.model.type.*;
+import interpreter.model.value.*;
 
 public class Examples {
     // Ex1: int v; v = 2; print(v)
@@ -66,6 +56,38 @@ public class Examples {
                                             new AssignStmt("v", new ValueExp(new IntValue(3)))
                                     ),
                                     new PrintStmt(new VarExp("v"))
+                            )
+                    )
+            )
+    );
+
+    public static IStmt fileExample(String fileName) {
+        return new CompStmt(new VarDeclStmt("varf", new StringType()),
+                new CompStmt(new AssignStmt("varf", new ValueExp(new StringValue(fileName))),
+                new CompStmt(new OpenRFileStmt(new VarExp("varf")),
+                new CompStmt(new VarDeclStmt("varc", new IntType()),
+                new CompStmt(new ReadFileStmt(new VarExp("varf"), "varc"),
+                new CompStmt(new PrintStmt(new VarExp("varc")),
+                new CompStmt(new ReadFileStmt(new VarExp("varf"), "varc"),
+                new CompStmt(new PrintStmt(new VarExp("varc")),
+                        new CloseRFileStmt(new VarExp("varf"))))))))));
+    }
+    public static final IStmt EX4 = fileExample("test.in");
+
+    // Ex5: int a; int b; a = 5; b = 7; (if a < b then print(a) else print(b))
+    public static final IStmt EX5 = new CompStmt(
+            new VarDeclStmt("a", new IntType()),
+            new CompStmt(
+                    new VarDeclStmt("b", new IntType()),
+                    new CompStmt(
+                            new AssignStmt("a", new ValueExp(new IntValue(5))),
+                            new CompStmt(
+                                    new AssignStmt("b", new ValueExp(new IntValue(7))),
+                                    new IfStmt(
+                                            new RelationalExp(RelationalOp.LT, new VarExp("a"), new VarExp("b")),
+                                            new PrintStmt(new VarExp("a")),
+                                            new PrintStmt(new VarExp("b"))
+                                    )
                             )
                     )
             )
