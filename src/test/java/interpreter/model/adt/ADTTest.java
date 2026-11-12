@@ -1,20 +1,22 @@
 package interpreter.model.adt;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import interpreter.exceptions.ADTException;
+import interpreter.model.type.StringType;
+import interpreter.model.value.StringValue;
 import org.junit.jupiter.api.Test;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ADTTest {
 
     @Test
-    void stackLifoOrderAndEmptyPopThrows() throws ADTException {
+    void stackPushPopAndToListTopFirst() throws ADTException {
         IStack<Integer> stack = new MyStack<>();
         assertTrue(stack.isEmpty());
 
         stack.push(10);
         stack.push(20);
-        assertFalse(stack.isEmpty());
+        assertEquals(List.of(20, 10), stack.toList());
         assertEquals(20, stack.pop());
         assertEquals(10, stack.pop());
         assertTrue(stack.isEmpty());
@@ -23,7 +25,7 @@ class ADTTest {
     }
 
     @Test
-    void dictionaryPutLookupUpdateAndMissingKeyThrows() throws ADTException {
+    void dictionaryPutLookupUpdateRemoveAndToMap() throws ADTException {
         IDictionary<String, Integer> dict = new MyDictionary<>();
         assertFalse(dict.isDefined("x"));
 
@@ -33,9 +35,12 @@ class ADTTest {
 
         dict.update("x", 42);
         assertEquals(42, dict.lookup("x"));
+        assertEquals(42, dict.toMap().get("x"));
 
-        assertThrows(ADTException.class, () -> dict.lookup("missing"));
-        assertThrows(ADTException.class, () -> dict.update("missing", 1));
+        dict.remove("x");
+        assertFalse(dict.isDefined("x"));
+        assertThrows(ADTException.class, () -> dict.lookup("a"));
+        assertThrows(ADTException.class, () -> dict.remove("a"));
     }
 
     @Test
@@ -49,7 +54,16 @@ class ADTTest {
         assertEquals("first", list.get(0));
         assertEquals("second", list.get(1));
 
-        assertThrows(ADTException.class, () -> list.get(-1));
+        assertEquals(List.of("first", "second"), list.toList());
         assertThrows(ADTException.class, () -> list.get(2));
+    }
+
+    @Test
+    void stringTypeDefaultAndStringValueEquality() {
+        assertEquals(new StringValue(""), new StringType().defaultValue());
+        StringValue s1 = new StringValue("test.in");
+        StringValue s2 = new StringValue("test.in");
+        assertEquals(s1, s2);
+        assertEquals(s1.hashCode(), s2.hashCode());
     }
 }

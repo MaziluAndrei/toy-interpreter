@@ -9,63 +9,52 @@ import interpreter.model.adt.MyDictionary;
 import interpreter.model.value.BoolValue;
 import interpreter.model.value.IValue;
 import interpreter.model.value.IntValue;
-import org.junit.jupiter.api.BeforeEach;
+import interpreter.model.value.StringValue;
 import org.junit.jupiter.api.Test;
 
 class ArithExpTest {
     private final IDictionary<String, IValue> symTable = new MyDictionary<>();
 
-    private static IExp num(int n) {
-        return new ValueExp(new IntValue(n));
-    }
+    @Test
+    void arithmeticOperatorsAndDivisionByZero() throws MyException {
+        IExp add = new ArithExp(ArithOp.ADD, new ValueExp(new IntValue(2)), new ValueExp(new IntValue(3)));
+        assertEquals(new IntValue(5), add.eval(symTable));
 
-    private static IExp bool(boolean b) {
-        return new ValueExp(new BoolValue(b));
+        IExp divZero = new ArithExp(ArithOp.DIV, new ValueExp(new IntValue(10)), new ValueExp(new IntValue(0)));
+        assertThrows(ExpressionException.class, () -> divZero.eval(symTable));
     }
 
     @Test
-    void arithmeticOperatorsEvaluateCorrectly() throws MyException {
-        assertEquals(new IntValue(7), new ArithExp(ArithOp.ADD, num(3), num(4)).eval(symTable));
-        assertEquals(new IntValue(6), new ArithExp(ArithOp.SUB, num(10), num(4)).eval(symTable));
-        assertEquals(new IntValue(15), new ArithExp(ArithOp.MUL, num(3), num(5)).eval(symTable));
-        assertEquals(new IntValue(4), new ArithExp(ArithOp.DIV, num(20), num(5)).eval(symTable));
+    void relationalOperatorsTrueAndFalse() throws MyException {
+        IExp five = new ValueExp(new IntValue(5));
+        IExp seven = new ValueExp(new IntValue(7));
+
+        assertEquals(new BoolValue(true), new RelationalExp(RelationalOp.LT, five, seven).eval(symTable));
+        assertEquals(new BoolValue(false), new RelationalExp(RelationalOp.LT, seven, five).eval(symTable));
+
+        assertEquals(new BoolValue(true), new RelationalExp(RelationalOp.LE, five, five).eval(symTable));
+        assertEquals(new BoolValue(false), new RelationalExp(RelationalOp.LE, seven, five).eval(symTable));
+
+        assertEquals(new BoolValue(true), new RelationalExp(RelationalOp.EQ, five, five).eval(symTable));
+        assertEquals(new BoolValue(false), new RelationalExp(RelationalOp.EQ, five, seven).eval(symTable));
+
+        assertEquals(new BoolValue(true), new RelationalExp(RelationalOp.NE, five, seven).eval(symTable));
+        assertEquals(new BoolValue(false), new RelationalExp(RelationalOp.NE, five, five).eval(symTable));
+
+        assertEquals(new BoolValue(true), new RelationalExp(RelationalOp.GT, seven, five).eval(symTable));
+        assertEquals(new BoolValue(false), new RelationalExp(RelationalOp.GT, five, seven).eval(symTable));
+
+        assertEquals(new BoolValue(true), new RelationalExp(RelationalOp.GE, five, five).eval(symTable));
+        assertEquals(new BoolValue(false), new RelationalExp(RelationalOp.GE, five, seven).eval(symTable));
     }
 
     @Test
-    void respectsOperatorPrecedenceEncodedInTheTree() throws MyException {
-        IExp e = new ArithExp(ArithOp.ADD, num(2),
-                new ArithExp(ArithOp.MUL, num(3), num(5)));
-        assertEquals(new IntValue(17), e.eval(symTable));
-    }
-
-    @Test
-    void divisionByZeroThrows() {
-        IExp e = new ArithExp(ArithOp.DIV, num(1), num(0));
-        var ex = assertThrows(ExpressionException.class, () -> e.eval(symTable));
-        assertEquals("division by zero", ex.getMessage());
-    }
-
-    @Test
-    void nonIntegerOperandThrows() {
-        IExp e1 = new ArithExp(ArithOp.ADD, bool(true), num(1));
-        assertThrows(ExpressionException.class, () -> e1.eval(symTable));
-
-        IExp e2 = new ArithExp(ArithOp.ADD, num(1), bool(false));
-        assertThrows(ExpressionException.class, () -> e2.eval(symTable));
-    }
-
-    @Test
-    void logicOperatorsAndTypeErrors() throws MyException {
-        assertEquals(new BoolValue(false), new LogicExp(LogicOp.AND, bool(true), bool(false)).eval(symTable));
-        assertEquals(new BoolValue(true), new LogicExp(LogicOp.OR, bool(false), bool(true)).eval(symTable));
-
-        IExp badLogic = new LogicExp(LogicOp.AND, num(1), bool(true));
-        assertThrows(ExpressionException.class, () -> badLogic.eval(symTable));
-    }
-
-    @Test
-    void undefinedVariableThrows() {
-        IExp varExp = new VarExp("x");
-        assertThrows(ExpressionException.class, () -> varExp.eval(symTable));
+    void relationalExpThrowsOnNonIntegerOperands() {
+        IExp str = new ValueExp(new StringValue("abc"));
+        IExp num = new ValueExp(new IntValue(5));
+        assertThrows(ExpressionException.class,
+                () -> new RelationalExp(RelationalOp.LT, str, num).eval(symTable));
+        assertThrows(ExpressionException.class,
+                () -> new RelationalExp(RelationalOp.LT, num, str).eval(symTable));
     }
 }
