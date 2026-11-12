@@ -23,7 +23,6 @@ class StmtTest {
         new AssignStmt("x", new ValueExp(new IntValue(42))).execute(state);
         assertEquals(new IntValue(42), state.getSymTable().lookup("x"));
     }
-
     @Test
     void assignTypeMismatchThrows() throws MyException {
         PrgState state = PrgState.of(new NopStmt());
