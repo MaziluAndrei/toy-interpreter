@@ -27,7 +27,6 @@ class StmtTest {
     void assignTypeMismatchThrows() throws MyException {
         PrgState state = PrgState.of(new NopStmt());
         new VarDeclStmt("x", new IntType()).execute(state);
-        assertThrows(StatementException.class,
-                () -> new AssignStmt("x", new ValueExp(new BoolValue(true))).execute(state));
+        assertThrows(StatementException.class, () -> new AssignStmt("x", new ValueExp(new BoolValue(true))).execute(state));
     }
 }

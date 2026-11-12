@@ -44,53 +44,44 @@ class FileStmtTest {
     @Test
     void openRFileErrors() throws MyException {
         // Non-string expression
-        assertThrows(StatementException.class,
-                () -> new OpenRFileStmt(new ValueExp(new IntValue(1))).execute(state));
+        assertThrows(StatementException.class, () -> new OpenRFileStmt(new ValueExp(new IntValue(1))).execute(state));
 
         // Missing file
         ValueExp missing = new ValueExp(new StringValue(dir.resolve("missing.in").toString()));
-        assertThrows(StatementException.class,
-                () -> new OpenRFileStmt(missing).execute(state));
+        assertThrows(StatementException.class, () -> new OpenRFileStmt(missing).execute(state));
 
         new OpenRFileStmt(file).execute(state);
-        assertThrows(StatementException.class,
-                () -> new OpenRFileStmt(file).execute(state));
+        assertThrows(StatementException.class, () -> new OpenRFileStmt(file).execute(state));
         new CloseRFileStmt(file).execute(state);
     }
 
     @Test
     void readFileErrors() throws Exception {
         // Variable not declared
-        assertThrows(StatementException.class,
-                () -> new ReadFileStmt(file, "undeclared").execute(state));
+        assertThrows(StatementException.class, () -> new ReadFileStmt(file, "undeclared").execute(state));
 
         // Variable not int
         new VarDeclStmt("flag", new BoolType()).execute(state);
-        assertThrows(StatementException.class,
-                () -> new ReadFileStmt(file, "flag").execute(state));
+        assertThrows(StatementException.class, () -> new ReadFileStmt(file, "flag").execute(state));
 
         // File not open
-        assertThrows(StatementException.class,
-                () -> new ReadFileStmt(file, "x").execute(state));
+        assertThrows(StatementException.class, () -> new ReadFileStmt(file, "x").execute(state));
 
         // Noninteger line in file
         Path badFile = dir.resolve("bad.in");
         Files.writeString(badFile, "not_a_number\n");
         ValueExp badExp = new ValueExp(new StringValue(badFile.toString()));
         new OpenRFileStmt(badExp).execute(state);
-        assertThrows(StatementException.class,
-                () -> new ReadFileStmt(badExp, "x").execute(state));
+        assertThrows(StatementException.class, () -> new ReadFileStmt(badExp, "x").execute(state));
         new CloseRFileStmt(badExp).execute(state);
     }
 
     @Test
     void closeRFileErrors() {
         // Close file not open
-        assertThrows(StatementException.class,
-                () -> new CloseRFileStmt(file).execute(state));
+        assertThrows(StatementException.class, () -> new CloseRFileStmt(file).execute(state));
 
         // Nonstring expression
-        assertThrows(StatementException.class,
-                () -> new CloseRFileStmt(new ValueExp(new IntValue(1))).execute(state));
+        assertThrows(StatementException.class, () -> new CloseRFileStmt(new ValueExp(new IntValue(1))).execute(state));
     }
 }

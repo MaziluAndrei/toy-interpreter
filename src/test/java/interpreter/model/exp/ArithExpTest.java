@@ -52,9 +52,7 @@ class ArithExpTest {
     void relationalExpThrowsOnNonIntegerOperands() {
         IExp str = new ValueExp(new StringValue("abc"));
         IExp num = new ValueExp(new IntValue(5));
-        assertThrows(ExpressionException.class,
-                () -> new RelationalExp(RelationalOp.LT, str, num).eval(symTable));
-        assertThrows(ExpressionException.class,
-                () -> new RelationalExp(RelationalOp.LT, num, str).eval(symTable));
+        assertThrows(ExpressionException.class, () -> new RelationalExp(RelationalOp.LT, str, num).eval(symTable));
+        assertThrows(ExpressionException.class, () -> new RelationalExp(RelationalOp.LT, num, str).eval(symTable));
     }
 }
