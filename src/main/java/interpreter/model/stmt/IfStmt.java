@@ -10,7 +10,7 @@ import interpreter.model.value.IValue;
 public record IfStmt(IExp cond, IStmt thenS, IStmt elseS) implements IStmt {
     @Override
     public PrgState execute(PrgState state) throws MyException {
-        IValue val = cond.eval(state.getSymTable());
+        IValue val = cond.eval(state.getSymTable(), state.getHeap());
         if (!(val instanceof BoolValue(boolean b))) {
             throw new StatementException("condition expression is not a boolean");
         }
