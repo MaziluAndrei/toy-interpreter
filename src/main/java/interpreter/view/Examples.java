@@ -92,4 +92,55 @@ public class Examples {
                     )
             )
     );
+
+    // Ref int v; new(v,20); Ref Ref int a; new(a,v); print(v); print(a)
+    public static final IStmt EX6 =
+            new CompStmt(new VarDeclStmt("v", new RefType(new IntType())),
+                    new CompStmt(new NewStmt("v", new ValueExp(new IntValue(20))),
+                            new CompStmt(new VarDeclStmt("a", new RefType(new RefType(new IntType()))),
+                                    new CompStmt(new NewStmt("a", new VarExp("v")),
+                                            new CompStmt(new PrintStmt(new VarExp("v")),
+                                                    new PrintStmt(new VarExp("a")))))));
+
+    // Ref int v; new(v,20); Ref Ref int a; new(a,v); print(rH(v)); print(rH(rH(a))+5)
+    public static final IStmt EX7 =
+            new CompStmt(new VarDeclStmt("v", new RefType(new IntType())),
+                    new CompStmt(new NewStmt("v", new ValueExp(new IntValue(20))),
+                            new CompStmt(new VarDeclStmt("a", new RefType(new RefType(new IntType()))),
+                                    new CompStmt(new NewStmt("a", new VarExp("v")),
+                                            new CompStmt(new PrintStmt(new ReadHeapExp(new VarExp("v"))),
+                                                    new PrintStmt(new ArithExp(ArithOp.ADD,
+                                                            new ReadHeapExp(new ReadHeapExp(new VarExp("a"))),
+                                                            new ValueExp(new IntValue(5)))))))));
+
+    // Ref int v; new(v,20); print(rH(v)); wH(v,30); print(rH(v)+5)
+    public static final IStmt EX8 =
+            new CompStmt(new VarDeclStmt("v", new RefType(new IntType())),
+                    new CompStmt(new NewStmt("v", new ValueExp(new IntValue(20))),
+                            new CompStmt(new PrintStmt(new ReadHeapExp(new VarExp("v"))),
+                                    new CompStmt(new WriteHeapStmt("v", new ValueExp(new IntValue(30))),
+                                            new PrintStmt(new ArithExp(ArithOp.ADD,
+                                                    new ReadHeapExp(new VarExp("v")),
+                                                    new ValueExp(new IntValue(5))))))));
+
+    // Ref int v; new(v,20); Ref Ref int a; new(a,v); new(v,30); print(rH(rH(a)))
+    public static final IStmt EX9 =
+            new CompStmt(new VarDeclStmt("v", new RefType(new IntType())),
+                    new CompStmt(new NewStmt("v", new ValueExp(new IntValue(20))),
+                            new CompStmt(new VarDeclStmt("a", new RefType(new RefType(new IntType()))),
+                                    new CompStmt(new NewStmt("a", new VarExp("v")),
+                                            new CompStmt(new NewStmt("v", new ValueExp(new IntValue(30))),
+                                                    new PrintStmt(new ReadHeapExp(new ReadHeapExp(new VarExp("a")))))))));
+
+    // int v; v = 4; (while (v > 0) (print(v); v = v - 1)); print(v)
+    public static final IStmt EX10 =
+            new CompStmt(new VarDeclStmt("v", new IntType()),
+                    new CompStmt(new AssignStmt("v", new ValueExp(new IntValue(4))),
+                            new CompStmt(new WhileStmt(
+                                    new RelationalExp(RelationalOp.GT, new VarExp("v"), new ValueExp(new IntValue(0))),
+                                    new CompStmt(new PrintStmt(new VarExp("v")),
+                                            new AssignStmt("v", new ArithExp(ArithOp.SUB,
+                                                    new VarExp("v"), new ValueExp(new IntValue(1)))))),
+                                    new PrintStmt(new VarExp("v")))));
+
 }
