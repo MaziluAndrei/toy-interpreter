@@ -3,13 +3,18 @@ package interpreter.controller;
 import interpreter.exceptions.MyException;
 import interpreter.model.PrgState;
 import interpreter.model.stmt.IStmt;
+import interpreter.model.type.IntType;
+import interpreter.model.type.RefType;
 import interpreter.model.value.IntValue;
+import interpreter.model.value.RefValue;
 import interpreter.repository.Repository;
 import interpreter.view.Examples;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ControllerTest {
@@ -59,5 +64,25 @@ class ControllerTest {
         int a = log.indexOf("ExeStack:"), b = log.indexOf("SymTable:"),
             c = log.indexOf("Out:"), d = log.indexOf("FileTable:");
         assertTrue(0 <= a && a < b && b < c && c < d);
+    }
+
+    @Test
+    void ex6ThroughEx10ProduceExpectedOutputs() throws Exception {
+        PrgState s6 = run(Examples.EX6);
+        assertEquals(List.of(new RefValue(1, new IntType()), new RefValue(2, new RefType(new IntType()))),
+                s6.getOut().toList());
+
+        PrgState s7 = run(Examples.EX7);
+        assertEquals(List.of(new IntValue(20), new IntValue(25)), s7.getOut().toList());
+
+        PrgState s8 = run(Examples.EX8);
+        assertEquals(List.of(new IntValue(20), new IntValue(35)), s8.getOut().toList());
+
+        PrgState s9 = run(Examples.EX9);
+        assertEquals(List.of(new IntValue(20)), s9.getOut().toList());
+
+        PrgState s10 = run(Examples.EX10);
+        assertEquals(List.of(new IntValue(4), new IntValue(3), new IntValue(2), new IntValue(1), new IntValue(0)),
+                s10.getOut().toList());
     }
 }
